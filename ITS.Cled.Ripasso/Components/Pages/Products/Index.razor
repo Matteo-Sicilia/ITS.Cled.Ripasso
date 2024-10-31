@@ -1,0 +1,47 @@
+@page "/products"
+@using ITS.Cled.Ripasso.Model
+@using ITS.Cled.Ripasso.Services
+
+@inject IProductDataService Data
+
+
+
+<h3>Prodotti</h3>
+
+<a href="/products/create" class="btn btn-primary mb-3">Create New Product</a>
+
+<table class="table table-striped">
+	<thead>
+	<tr>
+		<th>Id</th>
+		<th>Nome</th>
+		<th>Codice</th>
+		<th>Prezzo</th>
+		<th></th>
+	</tr>
+	</thead>
+	<tbody>
+		@foreach (var product in _products)
+		{
+			<tr>
+				<td>@product.Id</td>
+				<td>@product.Name</td>
+				<td>@product.Code</td>
+				<td>@product.Price</td>
+				<td>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+
+
+@code {
+	private IEnumerable<Product> _products = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		_products = await Data.GetProductsAsync();
+	}
+}
