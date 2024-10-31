@@ -7,7 +7,7 @@
 
 <h3>Update Product</h3>
 
-<EditForm Model="Input" OnInvalidSubmit="SaveProduct">
+<EditForm Model="Input" OnValidSubmit="SaveProduct">
 	<DataAnnotationsValidator />
 
 	<div class="form-group">
@@ -46,11 +46,16 @@
 		{
 			throw new Exception("Product Not Found");
 		}
+		else
+		{
+			Input = product;
+		}
 	}
 
 	private async Task SaveProduct()
 	{
 		await Data.UpdateProduct(Input);
+
 		Nav.NavigateTo("/products");
 	}
 }
