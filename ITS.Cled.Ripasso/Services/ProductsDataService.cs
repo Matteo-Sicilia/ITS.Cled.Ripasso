@@ -1,10 +1,8 @@
-using Dapper.Contrib.Extensions;
-using ITS.Cled.Ripasso.Model;
-
 namespace ITS.Cled.Ripasso.Services;
 
 using Dapper;
-using Dapper.Contrib;
+using Dapper.Contrib.Extensions;
+using ITS.Cled.Ripasso.Model;
 using Npgsql;
 
 public class ProductsDataService : IProductDataService
@@ -15,40 +13,71 @@ public class ProductsDataService : IProductDataService
     {
         _connectionString =
             configuration.GetConnectionString("db")
-            ?? throw new Exception("Missing connection string 'db'");
+            ?? throw new Exception("Missing connectionString 'db'.");
     }
 
     public async Task<IEnumerable<Product>> GetProductsAsync()
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.GetAllAsync<Product>();
+        using var connection = new NpgsqlConnection(_connectionString);
+        const string query = """
+            SELECT
+                id,
+                name,
+                code,
+                price
+            FROM products;
+            """;
+        return await connection.QueryAsync<Product>(query);
     }
 
     public async Task<Product?> GetProductById(int id)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.GetAsync<Product>(id);
+        using var connection = new NpgsqlConnection(_connectionString);
+        const string query = """
+            SELECT
+                id,
+                name,
+                code,
+                price
+            FROM products
+            WHERE id = @id;
+            """;
+        return await connection.QueryFirstOrDefaultAsync<Product>(query, new { id });
     }
 
     public async Task<Product> CreateProduct(Product product)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.InsertAsync(product);
+        using var connection = new NpgsqlConnection(_connectionString);
+        const string query = """
+            INSERT INTO products (name, code, price)
+            VALUES (@Name, @Code, @Price)  
+            """;
+        await connection.ExecuteAsync(query, product);
 
         return product;
     }
 
     public async Task UpdateProduct(Product product)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.UpdateAsync(product);
+        using var connection = new NpgsqlConnection(_connectionString);
+        const string query = """
+            UPDATE products
+            SET
+                name = @Name,
+                code = @Code,
+                price = @Price
+            WHERE id = @Id
+            """;
+        await connection.ExecuteAsync(query, product);
     }
 
     public async Task DeleteProduct(int id)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        const string query = "DELETE FROM Products WHERE Id = @Id";
+        using var connection = new NpgsqlConnection(_connectionString);
 
+        const string query = """
+            DELETE FROM products WHERE id = @id;
+            """;
         await connection.ExecuteAsync(query, new { id });
     }
 }
