@@ -1,4 +1,4 @@
-@page "/products/create"
+@page "/products/update/{id:int}"
 @using ITS.Cled.Ripasso.Services
 @using ITS.Cled.Ripasso.Model
 
@@ -7,7 +7,7 @@
 
 <h3>Create New Product</h3>
 
-<EditForm Model="Input" OnInvalidSubmit="CreateProduct">
+<EditForm Model="Input" OnInvalidSubmit="SaveProduct">
 	<DataAnnotationsValidator />
 
 	<div class="form-group">
@@ -36,9 +36,9 @@
 @code {
 	public Product Input {get; set;} = new();
 
-	private async Task CreateProduct()
+	private async Task SaveProduct()
 	{
-		await Data.CreateProduct(Input);
+		await Data.UpdateProduct(Input);
 		Nav.NavigateTo("/products");
 	}
 }
