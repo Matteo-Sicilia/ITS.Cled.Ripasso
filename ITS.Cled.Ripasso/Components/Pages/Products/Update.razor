@@ -5,7 +5,7 @@
 @inject IProductDataService Data
 @inject NavigationManager Nav
 
-<h3>Create New Product</h3>
+<h3>Update Product</h3>
 
 <EditForm Model="Input" OnInvalidSubmit="SaveProduct">
 	<DataAnnotationsValidator />
@@ -34,7 +34,19 @@
 </EditForm>
 
 @code {
+	[Parameter]
+	public int Id {get; set;}
+
 	public Product Input {get; set;} = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var product = await Data.GetProductById(Id);
+		if (product == null)
+		{
+			throw new Exception("Product Not Found");
+		}
+	}
 
 	private async Task SaveProduct()
 	{
