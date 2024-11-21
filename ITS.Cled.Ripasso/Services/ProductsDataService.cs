@@ -3,7 +3,7 @@ namespace ITS.Cled.Ripasso.Services;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using ITS.Cled.Ripasso.Model;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 public class ProductsDataService : IProductDataService
 {
@@ -18,7 +18,7 @@ public class ProductsDataService : IProductDataService
 
     public async Task<IEnumerable<Product>> GetProductsAsync()
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         const string query = """
             SELECT
                 id,
@@ -32,7 +32,7 @@ public class ProductsDataService : IProductDataService
 
     public async Task<Product?> GetProductById(int id)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         const string query = """
             SELECT
                 id,
@@ -47,7 +47,7 @@ public class ProductsDataService : IProductDataService
 
     public async Task<Product> CreateProduct(Product product)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         const string query = """
             INSERT INTO products (name, code, price)
             VALUES (@Name, @Code, @Price)  
@@ -59,7 +59,7 @@ public class ProductsDataService : IProductDataService
 
     public async Task UpdateProduct(Product product)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         const string query = """
             UPDATE products
             SET
@@ -73,7 +73,7 @@ public class ProductsDataService : IProductDataService
 
     public async Task DeleteProduct(int id)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
 
         const string query = """
             DELETE FROM products WHERE id = @id;
